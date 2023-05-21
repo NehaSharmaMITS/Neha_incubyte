@@ -1,0 +1,72 @@
+import java.util.ArrayList;
+import java.util.List;
+
+public class StringCalculator {
+    public static int add(String numbers) {
+        if (numbers == null || numbers.isEmpty()) {
+            return 0;
+        }
+
+        String delimiter = getDelimiter(numbers);
+        String[] numberArray = getNumberArray(numbers, delimiter);
+
+        List<Integer> negativeNumbers = new ArrayList<>();
+        int sum = 0;
+
+        for (String number : numberArray) {
+            int parsedNumber = Integer.parseInt(number);
+            if (parsedNumber < 0) {
+                negativeNumbers.add(parsedNumber);
+            }
+            sum += parsedNumber;
+        }
+
+        if (!negativeNumbers.isEmpty()) {
+            throw new IllegalArgumentException("Negatives not allowed: " + negativeNumbers);
+        }
+
+        return sum;
+    }
+
+    private static String getDelimiter(String numbers) {
+        if (numbers.startsWith("//")) {
+            return numbers.substring(2, numbers.indexOf('\n'));
+        }
+        return "[,\n]"; // Default delimiter is comma or new line
+    }
+
+    private static String[] getNumberArray(String numbers, String delimiter) {
+        String numberString = numbers;
+        if (numbers.startsWith("//")) {
+            numberString = numbers.substring(numbers.indexOf('\n') + 1);
+        }
+        return numberString.split(delimiter);
+    }
+}
+You can use the StringCalculator class in your Java code as follows:
+
+java
+Copy code
+public class Main {
+    public static void main(String[] args) {
+        String numbers = "1,2,3";
+        int sum = StringCalculator.add(numbers);
+        System.out.println(sum); // Output: 6
+
+        String numbersWithNewLines = "1\n2,3";
+        sum = StringCalculator.add(numbersWithNewLines);
+        System.out.println(sum); // Output: 6
+
+        String numbersWithCustomDelimiter = "//;\n1;2;3";
+        sum = StringCalculator.add(numbersWithCustomDelimiter);
+        System.out.println(sum); // Output: 6
+
+        String numbersWithNegative = "1,-2,3,-4";
+        try {
+            sum = StringCalculator.add(numbersWithNegative);
+            System.out.println(sum);
+        } catch (IllegalArgumentException ex) {
+            System.out.println(ex.getMessage()); // Output: Negatives not allowed: [-2, -4]
+        }
+    }
+}
