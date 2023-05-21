@@ -43,10 +43,7 @@ public class StringCalculator {
         return numberString.split(delimiter);
     }
 }
-You can use the StringCalculator class in your Java code as follows:
 
-java
-Copy code
 public class Main {
     public static void main(String[] args) {
         String numbers = "1,2,3";
