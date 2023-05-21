@@ -2,23 +2,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StringCalculator {
-    public static int add(String numbers) {
-        if (numbers == null || numbers.isEmpty()) {
+    public int add(String numbers) {
+        if (numbers.isEmpty()) {
             return 0;
         }
 
-        String delimiter = getDelimiter(numbers);
-        String[] numberArray = getNumberArray(numbers, delimiter);
+        String delimiter = ",";
+        if (numbers.startsWith("//")) {
+            int del_Index = numbers.indexOf("//") + 2;
+            delimiter = numbers.substring(del_Index, del_Index + 1);
+            numbers = numbers.substring(del_Index + 2);
+        }
 
+        String[] numberArray = numbers.split("[,\n" + delimiter + "]");
         List<Integer> negativeNumbers = new ArrayList<>();
-        int sum = 0;
 
-        for (String number : numberArray) {
-            int parsedNumber = Integer.parseInt(number);
-            if (parsedNumber < 0) {
-                negativeNumbers.add(parsedNumber);
+        int sum = 0;
+        for (String num : numberArray) {
+            int parsedNum = Integer.parseInt(num);
+            if (parsedNum < 0) {
+                negativeNumbers.add(parsedNum);
+            } else {
+                sum += parsedNum;
             }
-            sum += parsedNumber;
         }
 
         if (!negativeNumbers.isEmpty()) {
@@ -28,42 +34,20 @@ public class StringCalculator {
         return sum;
     }
 
-    private static String getDelimiter(String numbers) {
-        if (numbers.startsWith("//")) {
-            return numbers.substring(2, numbers.indexOf('\n'));
-        }
-        return "[,\n]"; // Default delimiter is comma or new line
-    }
-
-    private static String[] getNumberArray(String numbers, String delimiter) {
-        String numberString = numbers;
-        if (numbers.startsWith("//")) {
-            numberString = numbers.substring(numbers.indexOf('\n') + 1);
-        }
-        return numberString.split(delimiter);
-    }
-}
-
-public class Main {
     public static void main(String[] args) {
-        String numbers = "1,2,3";
-        int sum = StringCalculator.add(numbers);
-        System.out.println(sum); // Output: 6
+        StringCalculator calculator = new StringCalculator();
 
-        String numbersWithNewLines = "1\n2,3";
-        sum = StringCalculator.add(numbersWithNewLines);
-        System.out.println(sum); // Output: 6
+        // Example usage
+        int result1 = calculator.add("");                  // returns 0
+        int result2 = calculator.add("1");                 // returns 1
+        int result3 = calculator.add("1,2");               // returns 3
+        int result4 = calculator.add("1\n2,3");            // returns 6
+        int result5 = calculator.add("//;\n1;2");          // returns 3
 
-        String numbersWithCustomDelimiter = "//;\n1;2;3";
-        sum = StringCalculator.add(numbersWithCustomDelimiter);
-        System.out.println(sum); // Output: 6
-
-        String numbersWithNegative = "1,-2,3,-4";
-        try {
-            sum = StringCalculator.add(numbersWithNegative);
-            System.out.println(sum);
-        } catch (IllegalArgumentException ex) {
-            System.out.println(ex.getMessage()); // Output: Negatives not allowed: [-2, -4]
-        }
+        System.out.println(result1);
+        System.out.println(result2);
+        System.out.println(result3);
+        System.out.println(result4);
+        System.out.println(result5);
     }
 }
